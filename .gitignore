@@ -1,0 +1,7 @@
+node_modules
+package-lock.json
+.env
+.node-persist
+.env.staging
+.env.production
+database.db
