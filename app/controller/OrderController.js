@@ -39,6 +39,7 @@ const OrderController = {
           include: [
             { 
               model: ProductImage,
+              as: 'images',
               attributes: ['id', 'image']
             }
           ]
