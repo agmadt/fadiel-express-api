@@ -24,7 +24,7 @@ const ProductImage = sequelize.define( 'product_images', {
 );
 
 ProductImage.beforeCreate((productImage, _ ) => {
-  return productImage.id = uuid();
+  return productImage.id = uuidv4();
 });
 
 module.exports = ProductImage;

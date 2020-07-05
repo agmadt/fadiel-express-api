@@ -59,9 +59,6 @@ const OrderController = {
   },
 
   store: async (req, res) => {
-    
-    let order;
-    let products = [];
     const rules = {
       'buyer_name': [validations.required()],
       'buyer_email': [validations.required(), validations.email()],
@@ -80,6 +77,10 @@ const OrderController = {
 
     validateAll(req.body, rules, IndicativeErrorFormatter.messages())
       .then( async (data) => {
+    
+        let order;
+        let products = [];
+        
         transaction = await sequelize.transaction();
 
         order = await Order.create({

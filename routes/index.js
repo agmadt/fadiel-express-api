@@ -14,6 +14,7 @@ router.get('/orders/:id', orderController.show);
 
 // Product route
 router.get('/products', productController.index);
+router.post('/products', productController.store);
 router.get('/products/:id', productController.show);
 
 // test route

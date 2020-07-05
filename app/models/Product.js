@@ -24,7 +24,7 @@ const Product = sequelize.define( 'products', {
 );
 
 Product.beforeCreate((product, _ ) => {
-  return product.id = uuid();
+  return product.id = uuidv4();
 });
 
 module.exports = Product;
