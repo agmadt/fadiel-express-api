@@ -70,47 +70,48 @@ const OrderController = {
       'products.*.id': [validations.required()],
     };
 
-    const sanitizeInput = {
+    const sanitizer = {
       'buyer_name': [sanitizations.trim(), sanitizations.escape()],
       'buyer_email': [sanitizations.normalizeEmail()],
       'message': [sanitizations.trim(), sanitizations.escape()],
     }
 
-    sanitize(req.body, sanitizeInput);
+    sanitize(req.body, sanitizer);
 
     validateAll(req.body, rules, IndicativeErrorFormatter.messages())
+      .then( async (data) => {
+        transaction = await sequelize.transaction();
+
+        order = await Order.create({
+          'buyer_name': req.body.buyer_name,
+          'buyer_email': req.body.buyer_email
+        });
+    
+        for (let i = 0; i < req.body.products.length; i++) {
+          const item = req.body.products[i];
+          const product = await Product.findByPk(item.id);
+          if (!product) {
+            return res.status(404).json({
+              message: 'Product not found'
+            })
+          }
+          
+          await OrderProduct.create({
+            'product_id': product.id,
+            'order_id': order.id
+          });
+        }
+    
+        await transaction.commit();
+    
+        return res.json(order)
+      })
       .catch( (err) => {
         return res.status(422).json({
           message: 'The given data was invalid',
           errors: IndicativeErrorFormatter.format(err)
         })
       });
-
-    transaction = await sequelize.transaction();
-
-    order = await Order.create({
-      'buyer_name': req.body.buyer_name,
-      'buyer_email': req.body.buyer_email
-    });
-
-    for (let i = 0; i < req.body.products.length; i++) {
-      const item = req.body.products[i];
-      const product = await Product.findByPk(item.id);
-      if (!product) {
-        return res.status(404).json({
-          message: 'Product not found'
-        })
-      }
-      
-      await OrderProduct.create({
-        'product_id': product.id,
-        'order_id': order.id
-      });
-    }
-
-    await transaction.commit();
-
-    return res.json(order)
   }
 }
 
