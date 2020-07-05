@@ -29,7 +29,6 @@ const OrderController = {
 
   show: async(req, res) => {
 
-    await sequelize.sync();
     const order = await Order.findByPk(req.params.id, {
       include: [
         { 

@@ -39,14 +39,44 @@ const ProductController = {
       ]
     });
 
-    console.log(products.count)
-
     return res.json({
       products: products.rows,
       limit,
       page,
       total: products.count
     })
+  },
+
+  show: async(req, res) => {
+    const product = await Product.findByPk(req.params.id, {
+      include: [
+        { 
+          model: ProductImage,
+          attributes: ['id', 'image'],
+          as: 'images',
+        },
+        {
+          model: ProductVariant,
+          attributes: ['id', 'name'],
+          as: 'variants',
+          include: [
+            {
+              model: ProductVariantOption,
+              attributes: ['id', 'name'],
+              as: 'options'
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        message: 'Product not found'
+      });
+    }
+
+    return res.json(product)
   }
 }
 
