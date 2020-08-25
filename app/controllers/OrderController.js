@@ -1,7 +1,7 @@
 const { validations, validateAll } = require('indicative/validator')
 const { sanitizations, sanitize } = require('indicative/sanitizer')
 const { Order, Product, OrderProduct, ProductImage } = require('../models/Models')
-const IndicativeErrorFormatter = require('../helper/IndicativeErrorFormatter');
+const IndicativeErrorFormatter = require('../helpers/IndicativeErrorFormatter');
 const sequelize = require('../sequelize');
 
 const OrderController = {
