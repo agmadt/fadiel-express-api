@@ -5,6 +5,7 @@ const ProductImage = require('./ProductImage');
 const ProductVariant = require('./ProductVariant');
 const ProductVariantOption = require('./ProductVariantOption');
 const Media = require('./Media');
+const User = require('./User');
 
 Product.belongsToMany(Order, { through: OrderProduct, foreignKey: 'product_id', otherKey: 'order_id' });
 Product.hasMany(ProductImage, { as: 'images', foreignKey: 'product_id' });
@@ -19,5 +20,6 @@ module.exports = {
     ProductImage,
     ProductVariant,
     ProductVariantOption,
-    Media
+    Media,
+    User
 }

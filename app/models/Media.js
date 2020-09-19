@@ -2,7 +2,8 @@ const Sequelize = require('sequelize');
 const sequelize = require('../sequelize');
 const { v4: uuidv4 } = require('uuid');
 
-const Media = sequelize.define( 'medias', {
+const Media = sequelize.define('media', 
+  {
     id: {
       type: Sequelize.STRING,
       field: 'id',
@@ -20,7 +21,8 @@ const Media = sequelize.define( 'medias', {
       type: Sequelize.STRING,
       field: 'type'
     }
-  }, {
+  }, 
+  {
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: false,
