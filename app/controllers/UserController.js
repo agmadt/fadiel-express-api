@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const userModel = require('../models/UserModel');
+const userModel = require('../models/User');
 
 
 const UserController = {
