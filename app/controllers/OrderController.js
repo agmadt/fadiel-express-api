@@ -3,6 +3,7 @@ const { sanitizations, sanitize } = require('indicative/sanitizer')
 const { Order, Product, OrderProduct, ProductImage } = require('../models/Models')
 const IndicativeErrorFormatter = require('../helpers/IndicativeErrorFormatter');
 const sequelize = require('../sequelize');
+const day = require('dayjs');
 
 const OrderController = {
 
@@ -55,7 +56,16 @@ const OrderController = {
       })
     }
 
-    return res.json(order)
+    const orderProducts = [];
+
+    return res.json({
+      id: order.id,
+      buyer_name: order.buyer_name,
+      buyer_email: order.buyer_email,
+      message: order.message,
+      created_at: day(order.created_at).unix(),
+      products: order.products
+    })
   },
 
   store: async (req, res) => {
@@ -105,7 +115,12 @@ const OrderController = {
     
         await transaction.commit();
     
-        return res.json(order)
+        return res.json({
+          id: order.id,
+          buyer_name: order.buyer_name,
+          buyer_email: order.buyer_email,
+          created_at: day(order.created_at).unix()
+        })
       })
       .catch( (err) => {
         return res.status(422).json({

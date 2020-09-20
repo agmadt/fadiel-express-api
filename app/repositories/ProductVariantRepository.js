@@ -29,6 +29,32 @@ const ProductVariantRepository = {
 
     return productVariants;
   },
+  deleteAllVariantsFromProduct: async(product) => {
+    
+    let transaction = await sequelize.transaction();
+    
+    const variants = await ProductVariant.findAll({
+      where: { product_id: product.id },
+      include: [
+        {
+          model: ProductVariantOption,
+          as: 'options'
+        }
+      ]
+    });
+
+    variants.forEach(element => {
+      if (element.options) {
+        element.options.forEach(option => {
+          option.destroy();
+        });
+      }
+
+      element.destroy();
+    });
+
+    transaction.commit();
+  }
 }
   
 module.exports = ProductVariantRepository;

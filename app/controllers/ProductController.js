@@ -6,6 +6,7 @@ const UpdateProductRequest = require('../requests/UpdateProductRequest')
 const ProductRepository = require('../repositories/ProductRepository')
 const ProductImageRepository = require('../repositories/ProductImageRepository')
 const ProductVariantRepository = require('../repositories/ProductVariantRepository')
+const { Product, ProductImage } = require('../models/Models')
 
 const ProductController = {
 
@@ -23,8 +24,19 @@ const ProductController = {
       distinct: true
     });
 
+    const productsData = [];
+    products.rows.forEach((element, index) => {
+      productsData[index] = {
+        id: element.id,
+        name: element.name,
+        price: element.price,
+        images: element.images,
+        variants: element.variants
+      }
+    });
+
     return res.json({
-      products: products.rows,
+      products: productsData,
       limit,
       page,
       total: products.count
@@ -43,7 +55,13 @@ const ProductController = {
       });
     }
 
-    return res.json(product)
+    return res.json({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      images: product.images,
+      variants: product.variants
+    })
   },
 
   store: async(req, res) => {
@@ -56,14 +74,18 @@ const ProductController = {
         const product = await ProductRepository.store(data);
 
         if (data.images) {
-          await ProductImageRepository.store({ images: data.images, product });
+          ProductImageRepository.store({ images: data.images, product });
         }
 
         if (data.variants) {
-          await ProductVariantRepository.store({  variants: data.variants, product });
+          ProductVariantRepository.store({  variants: data.variants, product });
         }
 
-        return res.json(product)
+        return res.json({
+          id: product.id,
+          name: product.name,
+          price: product.price
+        })
       })
       .catch((err) => {
         return res.status(422).json({
@@ -91,106 +113,26 @@ const ProductController = {
     validateAll(req.body, UpdateProductRequest.rules, IndicativeErrorFormatter.messages())
       .then( async(data) => {
 
-        let product = await ProductRepository.findByColumn({
-          column: 'id',
-          value: req.params.id
-        })
-
-        product = await ProductRepository.update({
-          'product': product,
-          'name': data.name,
-          'price': data.price
+        let product = await Product.findOne({
+          where: { id: req.params.id }
         });
 
-        // if (data.images) {
-        //   let productImages = await ProductImage.findAll({
-        //     where: { 'product_id': product.id }
-        //   });
+        product = await product.update({
+          name: data.name,
+          price: data.price
+        });
 
-        //   // Loop to create a new image if image object doesnt have id
-        //   for (let i = 0; i < data.images.length; i++) {
-        //     const image = data.images[i];
-        //     if (!image.id) {
-        //       await ProductImage.create({
-        //         'product_id': product.id,
-        //         'image': image.image
-        //       });
-        //     }
-        //   }
+        if (data.images) {
+          await ProductImageRepository.deleteAllImagesFromProduct(product);
+          ProductImageRepository.store({ images: data.images, product });
+        }
 
-        //   // Loop to delete image if existing image is not exist in the images request
-        //   for (let i = 0; i < productImages.length; i++) {
-        //     const productImage = productImages[i];
+        if (data.variants) {
+          await ProductVariantRepository.deleteAllVariantsFromProduct(product);
+          ProductVariantRepository.store({  variants: data.variants, product });
+        }
 
-        //     const foundProductImage = await data.images.find(function(item) {
-        //       return item.id == productImage.id;
-        //     });
-
-        //     if (!foundProductImage) {
-        //       await ProductImage.destroy({ where: { id: productImage.id }});
-        //     }
-        //   }
-        // }
-
-        // if (data.variants) {
-        //   let productVariants = await ProductVariant.findAll({
-        //     where: { 'product_id': product.id }
-        //   });
-
-        //   for (let i = 0; i < data.variants.length; i++) {
-        //     const variant = data.variants[i];
-            
-        //     if (!variant.id) {
-        //       let productVariant = await ProductVariant.create({
-        //         'product_id': product.id,
-        //         'name': variant.name
-        //       });
-
-        //       for (let i = 0; i < variant.options.length; i++) {
-        //         const variantOption = variant.options[i];
-        //         await ProductVariantOption.create({
-        //           'product_variant_id': productVariant.id,
-        //           'name': variantOption.name
-        //         });
-        //       }
-        //     } else {
-        //       let productVariant = await ProductVariant.findByPk(variant.id);
-
-        //       if (!productVariant) {
-        //         continue;
-        //       }
-
-        //       productVariant = await productVariant.update({
-        //         'name': variant.name
-        //       })
-        //     }
-        //   }
-
-        //   for (let i = 0; i < productVariants.length; i++) {
-        //     const productVariant = productVariants[i];
-
-        //     const foundproductVariant = await data.variants.find(function(item) {
-        //       return item.id == productVariant.id;
-        //     });
-
-        //     if (!foundproductVariant) {
-        //       await ProductVariant.destroy({ where: { id: productVariant.id }});
-        //       await ProductVariantOption.destroy({ where: { 'product_variant_id': productVariant.id } });
-        //     }
-
-        //     for (let j = 0; j < data.variants.length; j++) {
-        //       for (let k = 0; k < variant.options.length; k++) {
-        //         const variantOption = variant.options[k];
-        //         await ProductVariantOption.create({
-        //           'product_variant_id': productVariant.id,
-        //           'name': variantOption.name
-        //         });
-        //       }
-        //     }
-        //   }
-        // }
-
-        return res.json(product)
+        return res.json(product);
       })
       .catch((err) => {
         console.log(err)

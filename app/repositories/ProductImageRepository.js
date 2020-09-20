@@ -16,6 +16,20 @@ const ProductImageRepository = {
 
     transaction.commit();
   },
+  deleteAllImagesFromProduct: async(product) => {
+      
+    let transaction = await sequelize.transaction();
+
+    const images = await ProductImage.findAll({
+      where: { product_id: product.id }
+    });
+
+    images.forEach(element => {
+      element.destroy();
+    });
+
+    transaction.commit();
+  },
 }
   
 module.exports = ProductImageRepository;
