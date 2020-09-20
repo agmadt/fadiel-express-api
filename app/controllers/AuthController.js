@@ -55,7 +55,7 @@ const AuthController = {
     
         return res.json({
           'access_token': token,
-          userData
+          data: userData
         })
       })
       .catch( (err) => {

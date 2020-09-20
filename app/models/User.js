@@ -1,5 +1,6 @@
 var Sequelize = require('sequelize');
 var sequelize = require('../sequelize');
+const { v4: uuidv4 } = require('uuid');
 
 var User = sequelize.define('users', 
   {
@@ -27,5 +28,9 @@ var User = sequelize.define('users',
     updatedAt: 'updated_at',
   }
 );
+
+User.beforeCreate((user, _ ) => {
+  return user.id = uuidv4();
+});
 
 module.exports = User;
