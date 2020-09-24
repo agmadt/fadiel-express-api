@@ -24,8 +24,8 @@ const ProductImageRepository = {
       where: { product_id: product.id }
     });
 
-    images.forEach(element => {
-      element.destroy();
+    images.forEach(async (element) => {
+      await element.destroy();
     });
 
     transaction.commit();

@@ -60,23 +60,27 @@ const ProductRepository = {
       
     let transaction = await sequelize.transaction();
 
-    return await Product.create({
+    const product = await Product.create({
       'name': data.name,
       'price': data.price,
     });
 
     transaction.commit();
+
+    return product;
   },
   update: async( data ) => {
       
     let transaction = await sequelize.transaction();
 
-    return await data.product.update({
+    const product = await data.product.update({
       'name': data.name,
       'price': data.price,
     });
 
     transaction.commit();
+
+    return product;
   }
 }
 

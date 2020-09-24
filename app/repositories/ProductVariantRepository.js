@@ -43,14 +43,14 @@ const ProductVariantRepository = {
       ]
     });
 
-    variants.forEach(element => {
+    variants.forEach(async (element) => {
       if (element.options) {
-        element.options.forEach(option => {
-          option.destroy();
+        element.options.forEach(async (option) => {
+          await option.destroy();
         });
       }
 
-      element.destroy();
+      await element.destroy();
     });
 
     transaction.commit();

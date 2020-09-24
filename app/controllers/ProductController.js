@@ -4,6 +4,7 @@ const IndicativeErrorFormatter = require('../helpers/IndicativeErrorFormatter');
 const StoreProductRequest = require('../requests/StoreProductRequest')
 const UpdateProductRequest = require('../requests/UpdateProductRequest')
 const ProductRepository = require('../repositories/ProductRepository')
+const ProductCategoryRepository = require('../repositories/ProductCategoryRepository')
 const ProductImageRepository = require('../repositories/ProductImageRepository')
 const ProductVariantRepository = require('../repositories/ProductVariantRepository')
 const { Product } = require('../models/Models')
@@ -81,6 +82,10 @@ const ProductController = {
           ProductVariantRepository.store({  variants: data.variants, product });
         }
 
+        if (data.categories) {
+          ProductCategoryRepository.store({  categories: data.categories, product });
+        }
+
         return res.json({
           id: product.id,
           name: product.name,
@@ -130,6 +135,11 @@ const ProductController = {
         if (data.variants) {
           await ProductVariantRepository.deleteAllVariantsFromProduct(product);
           ProductVariantRepository.store({  variants: data.variants, product });
+        }
+
+        if (data.categories) {
+          await ProductCategoryRepository.deleteAllCategoryFromProduct(product);
+          ProductCategoryRepository.store({  categories: data.categories, product });
         }
 
         return res.json(product);
