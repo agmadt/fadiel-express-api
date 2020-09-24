@@ -8,6 +8,7 @@ require('../app/helpers/Passport');
 
 // controllers
 const authController = require('../app/controllers/AuthController');
+const categoryController = require('../app/controllers/CategoryController');
 const orderController = require('../app/controllers/OrderController');
 const testController = require('../app/controllers/TestController');
 const productController = require('../app/controllers/ProductController');
@@ -15,6 +16,13 @@ const mediaController = require('../app/controllers/MediaController');
 
 // Auth route
 router.post('/auth/login', authController.login);
+
+// Category route
+router.get('/categories', categoryController.index);
+router.post('/categories', categoryController.store);
+router.get('/categories/:id', categoryController.show);
+router.patch('/categories/:id', categoryController.update);
+router.delete('/categories/:id', categoryController.destroy);
 
 // Order route
 router.get('/orders', orderController.index, passport.authenticate('jwt', {session: false}));

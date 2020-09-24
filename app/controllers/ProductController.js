@@ -6,7 +6,7 @@ const UpdateProductRequest = require('../requests/UpdateProductRequest')
 const ProductRepository = require('../repositories/ProductRepository')
 const ProductImageRepository = require('../repositories/ProductImageRepository')
 const ProductVariantRepository = require('../repositories/ProductVariantRepository')
-const { Product, ProductImage } = require('../models/Models')
+const { Product } = require('../models/Models')
 
 const ProductController = {
 
