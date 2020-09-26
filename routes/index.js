@@ -19,10 +19,10 @@ router.post('/auth/login', authController.login);
 
 // Category route
 router.get('/categories', categoryController.index);
-router.post('/categories', categoryController.store);
-router.get('/categories/:id', categoryController.show);
-router.patch('/categories/:id', categoryController.update);
-router.delete('/categories/:id', categoryController.destroy);
+router.post('/categories', categoryController.store, passport.authenticate('jwt', {session: false}));
+router.get('/categories/:id', categoryController.show, passport.authenticate('jwt', {session: false}));
+router.patch('/categories/:id', categoryController.update, passport.authenticate('jwt', {session: false}));
+router.delete('/categories/:id', categoryController.destroy, passport.authenticate('jwt', {session: false}));
 
 // Order route
 router.get('/orders', orderController.index, passport.authenticate('jwt', {session: false}));

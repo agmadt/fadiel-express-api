@@ -17,6 +17,14 @@ const Order = sequelize.define( 'orders',
       type: Sequelize.STRING,
       field: 'buyer_email'
     },
+    total: {
+      type: Sequelize.DECIMAL(16, 2),
+      field: 'total',
+      get() {
+        const value = this.getDataValue('total');
+        return value === null ? null : parseFloat(value);
+      }
+    },
     message: {
       type: Sequelize.STRING,
       field: 'message'

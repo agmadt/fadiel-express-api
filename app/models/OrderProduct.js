@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const sequelize = require('../sequelize');
 const { v4: uuidv4 } = require('uuid');
 
-const OrderProduct = sequelize.define( 'order_products', 
+const OrderProduct = sequelize.define('order_products', 
   {
     id: {
       type: Sequelize.STRING,
@@ -13,9 +13,9 @@ const OrderProduct = sequelize.define( 'order_products',
       type: Sequelize.STRING,
       field: 'order_id'
     },
-    product_id: {
-      type: Sequelize.STRING,
-      field: 'product_id'
+    product: {
+      type: Sequelize.TEXT,
+      field: 'product'
     }
   }, 
   {

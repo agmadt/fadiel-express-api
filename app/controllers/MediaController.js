@@ -22,7 +22,6 @@ const MediaController = {
       ContentType: req.file.mimetype
     }, async function(err, data) {
       if (err) throw err;
-      console.log(data);
       const uploadedMedia = await Media.create({
         'filename': data.Key,
         'location': data.Location,

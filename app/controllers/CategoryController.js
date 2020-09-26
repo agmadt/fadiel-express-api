@@ -16,6 +16,7 @@ const CategoryController = {
       order: [
         ['created_at', 'DESC']
       ],
+      attributes: ['id', 'name'],
       offset: offset,
       limit: limit,
       distinct: true
@@ -40,7 +41,10 @@ const CategoryController = {
       });
     }
 
-    return res.json(category)
+    return res.json({
+      id: category.id,
+      name: category.name
+    })
   },
 
   store: async(req, res) => {
@@ -52,7 +56,10 @@ const CategoryController = {
 
       const category = await CategoryRepository.store(data);
 
-      return res.json(category);
+      return res.json({
+        id: category.id,
+        name: category.name
+      });
     })
     .catch((err) => {
       return res.status(422).json({
@@ -84,7 +91,10 @@ const CategoryController = {
         category: category
       });
 
-      return res.json(category);
+      return res.json({
+        id: category.id,
+        name: category.name
+      });
     })
     .catch((err) => {
       return res.status(422).json({
@@ -113,7 +123,7 @@ const CategoryController = {
     }
 
     if (category.products.length > 0) {
-      return res.status(401).json({
+      return res.status(403).json({
         message: 'Category is still being used by products'
       });
     }

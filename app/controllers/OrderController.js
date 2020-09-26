@@ -1,9 +1,10 @@
-const { validations, validateAll } = require('indicative/validator')
-const { sanitizations, sanitize } = require('indicative/sanitizer')
-const { Order, Product, OrderProduct, ProductImage } = require('../models/Models')
+const { validateAll } = require('indicative/validator')
+const { sanitize } = require('indicative/sanitizer')
+const { Order, OrderProduct, Product, ProductImage, ProductVariantOption, ProductVariant } = require('../models/Models')
 const IndicativeErrorFormatter = require('../helpers/IndicativeErrorFormatter');
 const sequelize = require('../sequelize');
 const day = require('dayjs');
+const StoreOrderRequest = require('../requests/StoreOrderRequest');
 
 const OrderController = {
 
@@ -30,24 +31,14 @@ const OrderController = {
 
   show: async(req, res) => {
 
+    let orderProducts = [];
     const order = await Order.findByPk(req.params.id, {
       include: [
         { 
-          model: Product,
-          attributes: ['id', 'name', 'price'],
-          through: { attributes: [] },
-          include: [
-            { 
-              model: ProductImage,
-              as: 'images',
-              attributes: ['id', 'image']
-            }
-          ]
+          model: OrderProduct,
+          as: 'order_products'
         }
-      ],
-      attributes: [
-        'id', 'buyer_name', 'buyer_email', 'message', 'created_at'
-      ] 
+      ]
     });
 
     if (!order) {
@@ -56,62 +47,113 @@ const OrderController = {
       })
     }
 
-    const orderProducts = [];
+    for (let i = 0; i < order.order_products.length; i++) {
+      const item = order.order_products[i];
+      orderProducts.push(JSON.parse(item.product));
+    }
 
     return res.json({
       id: order.id,
       buyer_name: order.buyer_name,
       buyer_email: order.buyer_email,
+      total: order.total,
       message: order.message,
       created_at: day(order.created_at).unix(),
-      products: order.products
+      products: orderProducts
     })
   },
 
   store: async (req, res) => {
-    const rules = {
-      'buyer_name': [validations.required()],
-      'buyer_email': [validations.required(), validations.email()],
-      'products': [validations.required(), validations.array(), validations.min([1])],
-      'products.*': [validations.object()],
-      'products.*.id': [validations.required()],
-    };
 
-    const sanitizer = {
-      'buyer_name': [sanitizations.trim(), sanitizations.escape()],
-      'buyer_email': [sanitizations.normalizeEmail()],
-      'message': [sanitizations.trim(), sanitizations.escape()],
-    }
+    sanitize(req.body, StoreOrderRequest.sanitizer);
 
-    sanitize(req.body, sanitizer);
-
-    validateAll(req.body, rules, IndicativeErrorFormatter.messages())
+    validateAll(req.body, StoreOrderRequest.rules, IndicativeErrorFormatter.messages())
       .then( async (data) => {
     
         let order;
-        let products = [];
+        let total = 0;
         
         transaction = await sequelize.transaction();
 
         order = await Order.create({
-          'buyer_name': req.body.buyer_name,
-          'buyer_email': req.body.buyer_email
+          buyer_name: req.body.buyer_name,
+          buyer_email: req.body.buyer_email,
+          total: 0,
+          message: req.body.message
         });
     
         for (let i = 0; i < req.body.products.length; i++) {
+          let subtotal = 0;
           const item = req.body.products[i];
-          const product = await Product.findByPk(item.id);
+          const product = await Product.findOne({
+            where: { id: item.id },
+            include: [
+              {
+                model: ProductImage,
+                as: 'images',
+                attributes: ['image']
+              }
+            ]
+          });
+
           if (!product) {
             return res.status(404).json({
               message: 'Product not found'
-            })
+            });
+          }
+
+          total += product.price * item.quantity;
+          subtotal += product.price * item.quantity;
+
+          let productVariants = [];
+          if (item.variants.length > 0) {
+            for (let j = 0; j < item.variants.length; j++) {
+              const variant = item.variants[j];
+              const productOption = await ProductVariantOption.findOne({
+                where: {
+                  id: variant.option_id,
+                  product_variant_id: variant.variant_id
+                },
+                include: [
+                  {
+                    model: ProductVariant,
+                    as: 'variant'
+                  }
+                ]
+              });
+    
+              if (!productOption) {
+                return res.status(404).json({
+                  message: 'Product variant not found'
+                });
+              }
+
+              productVariants.push({
+                variant_id: productOption.variant.id,
+                variant_name: productOption.variant.name,
+                variant_option_id: productOption.id,
+                variant_option_name: productOption.name
+              });
+            }
           }
           
           await OrderProduct.create({
-            'product_id': product.id,
-            'order_id': order.id
+            order_id: order.id,
+            product: JSON.stringify({
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              quantity: item.quantity,
+              subtotal: subtotal,
+              images: product.images,
+              variants: productVariants
+            })
           });
         }
+
+        order.update({
+          total: total
+        });
     
         await transaction.commit();
     
@@ -119,10 +161,13 @@ const OrderController = {
           id: order.id,
           buyer_name: order.buyer_name,
           buyer_email: order.buyer_email,
+          total: total,
+          message: order.message,
           created_at: day(order.created_at).unix()
-        })
+        });
       })
       .catch( (err) => {
+        console.log(err)
         return res.status(422).json({
           message: 'The given data was invalid',
           errors: IndicativeErrorFormatter.format(err)
