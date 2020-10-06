@@ -2,7 +2,7 @@ const { validateAll } = require('indicative/validator')
 const { sanitize } = require('indicative/sanitizer')
 const CategoryRepository = require('../repositories/CategoryRepository')
 const IndicativeErrorFormatter = require('../helpers/IndicativeErrorFormatter');
-const StoreCategoryRequest = require('../requests/StoreCategoryRequest')
+const StoreCategoryValidator = require('../validators/StoreCategoryValidator')
 const { Category, ProductCategory, Product } = require('../models/Models')
 
 const CategoryController = {
@@ -49,9 +49,9 @@ const CategoryController = {
 
   store: async(req, res) => {
 
-    sanitize(req.body, StoreCategoryRequest.sanitizer);
+    sanitize(req.body, StoreCategoryValidator.sanitizer);
 
-    validateAll(req.body, StoreCategoryRequest.rules, IndicativeErrorFormatter.messages())
+    validateAll(req.body, StoreCategoryValidator.rules, IndicativeErrorFormatter.messages())
     .then( async(data) => {
 
       const category = await CategoryRepository.store(data);
@@ -81,9 +81,9 @@ const CategoryController = {
       });
     }
 
-    sanitize(req.body, StoreCategoryRequest.sanitizer);
+    sanitize(req.body, StoreCategoryValidator.sanitizer);
 
-    validateAll(req.body, StoreCategoryRequest.rules, IndicativeErrorFormatter.messages())
+    validateAll(req.body, StoreCategoryValidator.rules, IndicativeErrorFormatter.messages())
     .then( async(data) => {
 
       category = await CategoryRepository.update({

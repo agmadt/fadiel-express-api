@@ -4,7 +4,7 @@ const { Order, OrderProduct, Product, ProductImage, ProductVariantOption, Produc
 const IndicativeErrorFormatter = require('../helpers/IndicativeErrorFormatter');
 const sequelize = require('../sequelize');
 const day = require('dayjs');
-const StoreOrderRequest = require('../requests/StoreOrderRequest');
+const StoreOrderValidator = require('../validators/StoreOrderValidator');
 
 const OrderController = {
 
@@ -65,9 +65,9 @@ const OrderController = {
 
   store: async (req, res) => {
 
-    sanitize(req.body, StoreOrderRequest.sanitizer);
+    sanitize(req.body, StoreOrderValidator.sanitizer);
 
-    validateAll(req.body, StoreOrderRequest.rules, IndicativeErrorFormatter.messages())
+    validateAll(req.body, StoreOrderValidator.rules, IndicativeErrorFormatter.messages())
       .then( async (data) => {
     
         let order;

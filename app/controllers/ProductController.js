@@ -1,8 +1,8 @@
 const { validateAll } = require('indicative/validator')
 const { sanitize } = require('indicative/sanitizer')
 const IndicativeErrorFormatter = require('../helpers/IndicativeErrorFormatter');
-const StoreProductRequest = require('../requests/StoreProductRequest')
-const UpdateProductRequest = require('../requests/UpdateProductRequest')
+const StoreProductValidator = require('../validators/StoreProductValidator')
+const UpdateProductValidator = require('../validators/UpdateProductValidator')
 const ProductRepository = require('../repositories/ProductRepository')
 const ProductCategoryRepository = require('../repositories/ProductCategoryRepository')
 const ProductImageRepository = require('../repositories/ProductImageRepository')
@@ -67,9 +67,9 @@ const ProductController = {
 
   store: async(req, res) => {
     
-    sanitize(req.body, StoreProductRequest.sanitizer);
+    sanitize(req.body, StoreProductValidator.sanitizer);
 
-    validateAll(req.body, StoreProductRequest.rules, IndicativeErrorFormatter.messages())
+    validateAll(req.body, StoreProductValidator.rules, IndicativeErrorFormatter.messages())
       .then( async(data) => {
 
         const product = await ProductRepository.store(data);
@@ -113,9 +113,9 @@ const ProductController = {
       });
     }
     
-    sanitize(req.body, UpdateProductRequest.sanitizer);
+    sanitize(req.body, UpdateProductValidator.sanitizer);
 
-    validateAll(req.body, UpdateProductRequest.rules, IndicativeErrorFormatter.messages())
+    validateAll(req.body, UpdateProductValidator.rules, IndicativeErrorFormatter.messages())
       .then( async(data) => {
 
         let product = await Product.findOne({
