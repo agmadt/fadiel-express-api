@@ -1,7 +1,6 @@
-const Router = require('./Router');
-const router = new Router();
+const express = require('express');
+const router = express.Router();
 const multer = require('multer');
-const upload = multer();
 const passport = require('passport');
 
 require('../app/helpers/Passport');
@@ -19,41 +18,28 @@ router.post('/auth/login', authController.login);
 
 // Category route
 router.get('/categories', categoryController.index);
-router.post('/categories', categoryController.store, passport.authenticate('jwt', {session: false}));
-router.get('/categories/:id', categoryController.show, passport.authenticate('jwt', {session: false}));
-router.patch('/categories/:id', categoryController.update, passport.authenticate('jwt', {session: false}));
-router.delete('/categories/:id', categoryController.destroy, passport.authenticate('jwt', {session: false}));
+router.post('/categories', passport.authenticate('jwt', {session: false}), categoryController.store);
+router.get('/categories/:id', passport.authenticate('jwt', {session: false}), categoryController.show);
+router.patch('/categories/:id', passport.authenticate('jwt', {session: false}), categoryController.update);
+router.delete('/categories/:id', passport.authenticate('jwt', {session: false}), categoryController.destroy);
 
 // Order route
-router.get('/orders', orderController.index, passport.authenticate('jwt', {session: false}));
+router.get('/orders', passport.authenticate('jwt', {session: false}), orderController.index);
 router.post('/orders', orderController.store);
-router.get('/orders/:id', orderController.show, passport.authenticate('jwt', {session: false}));
+router.get('/orders/:id', orderController.show);
 
 // Product route
 router.get('/products', productController.index);
-router.post('/products', productController.store, passport.authenticate('jwt', {session: false}));
+router.post('/products', passport.authenticate('jwt', {session: false}), productController.store);
 router.get('/products/:id', productController.show);
-router.patch('/products/:id', productController.update, passport.authenticate('jwt', {session: false}));
-router.delete('/products/:id', productController.delete, passport.authenticate('jwt', {session: false}));
+router.patch('/products/:id', passport.authenticate('jwt', {session: false}), productController.update);
+router.delete('/products/:id', passport.authenticate('jwt', {session: false}), productController.delete);
 
 // test route
 router.get('/test', testController.index);
 router.post('/test', testController.post);
 
-const multerUpload = upload.single('media');
-router.post('/media', function (req, res, next) {
-    multerUpload(req, res, function (err) {
-        if (err instanceof multer.MulterError) {
-            return res.status(400).json({
-              message: err
-            })
-        } else if (err) {
-            return res.status(400).json({
-              message: err
-            })
-        }
-        mediaController.store(req, res)
-    });
-}, passport.authenticate('jwt', {session: false}));
+const multerUpload = multer().single('media');
+router.post('/media', passport.authenticate('jwt', {session: false}), multerUpload, mediaController.store);
 
-module.exports = router.create();
+module.exports = router;

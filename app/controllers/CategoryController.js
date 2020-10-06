@@ -131,7 +131,7 @@ const CategoryController = {
     category.destroy();
 
     return res.json({
-      message: 'Category successfully deleted.'
+      message: 'Category successfully deleted'
     });
   },
 }
