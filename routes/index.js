@@ -34,6 +34,7 @@ router.get('/products', productController.index);
 router.post('/products', productController.store, passport.authenticate('jwt', {session: false}));
 router.get('/products/:id', productController.show);
 router.patch('/products/:id', productController.update, passport.authenticate('jwt', {session: false}));
+router.delete('/products/:id', productController.delete, passport.authenticate('jwt', {session: false}));
 
 // test route
 router.get('/test', testController.index);

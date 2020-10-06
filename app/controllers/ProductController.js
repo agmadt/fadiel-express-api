@@ -134,12 +134,12 @@ const ProductController = {
 
         if (data.variants) {
           await ProductVariantRepository.deleteAllVariantsFromProduct(product);
-          ProductVariantRepository.store({  variants: data.variants, product });
+          ProductVariantRepository.store({ variants: data.variants, product });
         }
 
         if (data.categories) {
           await ProductCategoryRepository.deleteAllCategoryFromProduct(product);
-          ProductCategoryRepository.store({  categories: data.categories, product });
+          ProductCategoryRepository.store({ categories: data.categories, product });
         }
 
         return res.json(product);
@@ -151,6 +151,29 @@ const ProductController = {
           errors: IndicativeErrorFormatter.format(err)
         })
       })
+  },
+
+  delete: async(req, res) => {
+
+    let product = await ProductRepository.findByColumn({
+      column: 'id', 
+      value: req.params.id
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        message: 'Product not found'
+      });
+    }
+
+    await ProductImageRepository.deleteAllImagesFromProduct(product);
+    await ProductVariantRepository.deleteAllVariantsFromProduct(product);
+    await ProductCategoryRepository.deleteAllCategoryFromProduct(product);
+    await product.destroy();
+
+    return res.json({
+      message: 'Product successfully deleted'
+    });
   }
 }
 
