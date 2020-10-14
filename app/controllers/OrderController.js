@@ -1,6 +1,6 @@
 const { validateAll } = require('indicative/validator')
 const { sanitize } = require('indicative/sanitizer')
-const { Order, OrderProduct, Product, ProductImage, ProductVariantOption, ProductVariant } = require('../models/Models')
+const { Order, OrderProduct, Product, ProductImage, ProductVariantOption, ProductVariant, ProductCategory, Category } = require('../models/Models')
 const IndicativeErrorFormatter = require('../helpers/IndicativeErrorFormatter');
 const sequelize = require('../sequelize');
 const day = require('dayjs');
@@ -92,10 +92,21 @@ const OrderController = {
                 model: ProductImage,
                 as: 'images',
                 attributes: ['image']
+              },
+              {
+                model: ProductCategory,
+                as: 'product_categories',
+                include: [
+                  {
+                    model: Category,
+                    as: 'product_categories_category'
+                  }
+                ]
               }
             ]
           });
 
+          
           if (!product) {
             return res.status(404).json({
               message: 'Product not found'
@@ -104,6 +115,7 @@ const OrderController = {
 
           total += product.price * item.quantity;
           subtotal += product.price * item.quantity;
+
 
           let productVariants = [];
           if (item.variants.length > 0) {
@@ -136,6 +148,15 @@ const OrderController = {
               });
             }
           }
+
+          let productCategories = [];
+          if (product.product_categories.length > 0) {
+            for (let i = 0; i < product.product_categories.length; i++) {
+              const productCategory = product.product_categories[i];
+              const category = productCategory.product_categories_category;
+              productCategories.push(category.name)
+            }
+          }
           
           await OrderProduct.create({
             order_id: order.id,
@@ -143,10 +164,12 @@ const OrderController = {
               id: product.id,
               name: product.name,
               price: product.price,
+              description: product.description,
               quantity: item.quantity,
               subtotal: subtotal,
               images: product.images,
-              variants: productVariants
+              variants: productVariants,
+              categories: productCategories
             })
           });
         }

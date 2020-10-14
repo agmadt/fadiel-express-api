@@ -9,11 +9,11 @@ const ProductVariant = require('./ProductVariant');
 const ProductVariantOption = require('./ProductVariantOption');
 const User = require('./User');
 
-Category.belongsToMany(Product, { through: ProductCategory, as: 'products', foreignKey: 'category_id' });
 Order.hasMany(OrderProduct, { as: 'order_products', foreignKey: 'order_id' });
-Product.belongsToMany(Category, { through: ProductCategory, as: 'categories', foreignKey: 'product_id' });
 Product.hasMany(ProductImage, { as: 'images', foreignKey: 'product_id' });
 Product.hasMany(ProductVariant, { as: 'variants', foreignKey: 'product_id' });
+Product.hasMany(ProductCategory, { as: 'product_categories', foreignKey: 'product_id' });
+ProductCategory.belongsTo(Category, { as: 'product_categories_category', foreignKey: 'category_id' });
 ProductVariant.hasMany(ProductVariantOption, { as: 'options', foreignKey: 'product_variant_id' });
 ProductVariantOption.belongsTo(ProductVariant, { as: 'variant', foreignKey: 'product_variant_id' });
 

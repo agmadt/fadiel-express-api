@@ -16,6 +16,10 @@ const Product = sequelize.define('products',
     price: {
       type: Sequelize.INTEGER,
       field: 'price'
+    },
+    description: {
+      type: Sequelize.TEXT,
+      field: 'description'
     }
   }, 
   {
