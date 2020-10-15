@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../sequelize');
 const { v4: uuidv4 } = require('uuid');
+const dayjs = require('dayjs')
 
 const Order = sequelize.define( 'orders', 
   {
@@ -28,6 +29,13 @@ const Order = sequelize.define( 'orders',
     message: {
       type: Sequelize.STRING,
       field: 'message'
+    },
+    created_at: {
+      type: Sequelize.DATE,
+      field: 'created_at',
+      get() {
+        return dayjs(this.getDataValue('created_at')).add(7, 'h').valueOf() / 1000;
+      }
     }
   }, 
   {

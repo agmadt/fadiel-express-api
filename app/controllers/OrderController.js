@@ -14,6 +14,9 @@ const OrderController = {
     const offset = (page - 1) * limit;
 
     const orders = await Order.findAndCountAll({
+      attributes: [
+        "id", "buyer_name", "buyer_email", "total", "message", "created_at"
+      ],
       order: [
         ['created_at', 'DESC']
       ],
@@ -21,8 +24,20 @@ const OrderController = {
       limit: limit
     });
 
+    let ordersData = [];
+    orders.rows.forEach(order => {
+      ordersData.push({
+        id: order.id,
+        buyer_name: order.buyer_name,
+        buyer_email: order.buyer_email,
+        total: order.total,
+        message: order.message,
+        created_at: order.created_at,
+      })
+    });
+
     return res.json({
-      orders: orders.rows,
+      orders: ordersData,
       limit,
       page,
       total: orders.count
