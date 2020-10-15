@@ -42,6 +42,7 @@ const ProductController = {
         id: element.id,
         name: element.name,
         price: element.price,
+        description: element.description,
         images: element.images,
         variants: element.variants,
         categories: productCategoriesData
