@@ -27,12 +27,24 @@ const ProductController = {
 
     const productsData = [];
     products.rows.forEach((element, index) => {
+
+      let productCategoriesData = [];
+      if (element.product_categories.length > 0) {
+        element.product_categories.forEach(productCategory => {
+          productCategoriesData.push({
+            id: productCategory.category_id,
+            name: productCategory.product_categories_category.name
+          })
+        });
+      }
+
       productsData[index] = {
         id: element.id,
         name: element.name,
         price: element.price,
         images: element.images,
-        variants: element.variants
+        variants: element.variants,
+        categories: productCategoriesData
       }
     });
 
@@ -56,12 +68,23 @@ const ProductController = {
       });
     }
 
+    let productCategoriesData = [];
+    if (product.product_categories.length > 0) {
+      product.product_categories.forEach(productCategory => {
+        productCategoriesData.push({
+          id: productCategory.category_id,
+          name: productCategory.product_categories_category.name
+        })
+      });
+    }
+
     return res.json({
       id: product.id,
       name: product.name,
       price: product.price,
       images: product.images,
-      variants: product.variants
+      variants: product.variants,
+      categories: productCategoriesData
     })
   },
 

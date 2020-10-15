@@ -1,4 +1,4 @@
-const { Product, ProductImage, ProductVariant, ProductVariantOption } = require('../models/Models');
+const { Product, ProductImage, ProductVariant, ProductVariantOption, ProductCategory, Category } = require('../models/Models');
 const sequelize = require('../sequelize');
 
 const ProductRepository = {
@@ -26,6 +26,16 @@ const ProductRepository = {
               as: 'options'
             }
           ]
+        },
+        {
+          model: ProductCategory,
+          as: 'product_categories',
+          include: [
+            {
+              model: Category,
+              as: 'product_categories_category'
+            }
+          ]
         }
       ]
     });
@@ -50,6 +60,16 @@ const ProductRepository = {
               model: ProductVariantOption,
               attributes: ['id', 'name'],
               as: 'options'
+            }
+          ]
+        },
+        {
+          model: ProductCategory,
+          as: 'product_categories',
+          include: [
+            {
+              model: Category,
+              as: 'product_categories_category'
             }
           ]
         }
