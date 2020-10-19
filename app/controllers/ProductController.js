@@ -96,15 +96,17 @@ const ProductController = {
     validateAll(req.body, StoreProductValidator.rules, IndicativeErrorFormatter.messages())
       .then( async(data) => {
 
-        for (let i = 0; i < data.categories.length; i++) {
-          const category = await Category.findOne({
-            where: { id: data.categories[i].id }
-          });
-          
-          if (!category) {
-            return res.status(404).json({
-              message: 'Category not found',
-            })
+        if (data.categories) {
+          for (let i = 0; i < data.categories.length; i++) {
+            const category = await Category.findOne({
+              where: { id: data.categories[i].id }
+            });
+            
+            if (!category) {
+              return res.status(404).json({
+                message: 'Category not found',
+              })
+            }
           }
         }
 
@@ -155,15 +157,17 @@ const ProductController = {
     validateAll(req.body, UpdateProductValidator.rules, IndicativeErrorFormatter.messages())
       .then( async(data) => {
         
-        for (let i = 0; i < data.categories.length; i++) {
-          const category = await Category.findOne({
-            where: { id: data.categories[i].id }
-          });
-          
-          if (!category) {
-            return res.status(404).json({
-              message: 'Category not found',
-            })
+        if (data.categories) {
+          for (let i = 0; i < data.categories.length; i++) {
+            const category = await Category.findOne({
+              where: { id: data.categories[i].id }
+            });
+            
+            if (!category) {
+              return res.status(404).json({
+                message: 'Category not found',
+              })
+            }
           }
         }
 
