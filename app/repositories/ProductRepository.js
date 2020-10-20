@@ -83,6 +83,7 @@ const ProductRepository = {
     const product = await Product.create({
       'name': data.name,
       'price': data.price,
+      'description': data.description,
     });
 
     transaction.commit();
@@ -96,6 +97,7 @@ const ProductRepository = {
     const product = await data.product.update({
       'name': data.name,
       'price': data.price,
+      'description': data.description,
     });
 
     transaction.commit();

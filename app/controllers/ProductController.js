@@ -127,7 +127,8 @@ const ProductController = {
         return res.json({
           id: product.id,
           name: product.name,
-          price: product.price
+          price: product.price,
+          description: product.description
         })
       })
       .catch((err) => {
@@ -177,7 +178,8 @@ const ProductController = {
 
         product = await product.update({
           name: data.name,
-          price: data.price
+          price: data.price,
+          description: data.description
         });
 
         if (data.images) {
@@ -195,7 +197,12 @@ const ProductController = {
           ProductCategoryRepository.store({ categories: data.categories, product });
         }
 
-        return res.json(product);
+        return res.json({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          description: product.description
+        });
       })
       .catch((err) => {
         console.log(err)
