@@ -1,7 +1,28 @@
-Minimal setup for building API with express.js
+# Fa`Diel Project
+Fa`Diel is the name of the world in which at least some of the games of the Mana series take place.
+This project goal is to make an interchangeable API endpoint for a simple Shop using PHP, JavaScript, and Golang programming language
 
-HOW TO:
-1. clone this
-2. `npm install`
-- `npm run dev` for developing
-- `npm run test` for testing
+# API Specification and Documentation
+- http://adhityoagam.com:8003/
+
+# Base API URL
+- https://fadiel.adhityoagam.com/express
+
+# Local Usage
+Make sure to have latest Node.js and nodemon installed -- [Nodemon](https://github.com/remy/nodemon/)
+
+Change `.env.example` to `.env` and change the configuration accordingly, then
+
+```sh
+$ npm install
+$ npm run dev
+```
+
+OR
+
+```sh
+$ yarn
+$ yarn dev
+```
+
+and use `http://{host}:{port}` for the base URL for the API endpoint
