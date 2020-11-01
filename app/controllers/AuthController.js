@@ -49,8 +49,9 @@ const AuthController = {
         };
     
         const token = jwt.sign({
-          'iat': day().unix(),
           'exp': day().add(10, 'day').unix(),
+          'iat': day().unix(),
+          'sub': isUserExist.id,
         }, process.env.JWT_SECRET);
     
         return res.json({
