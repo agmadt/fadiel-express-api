@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/agmadt/admiral-coco.git#readme",
   "dependencies": {
-    "aws-sdk": "^2.738.0",
+    "aws-sdk": "^2.814.0",
     "bcrypt": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "child-process-promise": "^2.2.1",
